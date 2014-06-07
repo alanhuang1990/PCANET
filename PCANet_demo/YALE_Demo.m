@@ -22,6 +22,15 @@ F_acc = [];
 F_err = [];
 load('./YALE64/Yale_32x32.mat'); 
 
+%normalize to unit
+factor = sqrt(sum(fea.^2,2))
+
+for i = 1:TrnSize
+    fea(i,:) = fea(i,:)/factor(i);
+end
+
+
+
 % load Yale (64x64) data
 for train_num = 2:8
     for itr = 1:50
@@ -29,8 +38,10 @@ for train_num = 2:8
 
         %fprintf(DataSplitsAddr);
         load(DataSplitsAddr);
-
-
+        
+        
+        
+        
         TrnData = fea(trainIdx,:)';  
         TrnLabels = gnd(trainIdx,:);
         TestData = fea(testIdx,:)';
