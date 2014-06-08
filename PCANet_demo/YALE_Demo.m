@@ -23,12 +23,12 @@ F_err = [];
 load('./YALE64/Yale_32x32.mat'); 
 
 %normalize to unit
-factor = sqrt(sum(fea.^2,2))
+%factor = sqrt(sum(fea.^2,2))
 
-for i = 1:TrnSize
-    fea(i,:) = fea(i,:)/factor(i);
-end
-
+%for i = 1:TrnSize
+%    fea(i,:) = fea(i,:)/factor(i);
+%end
+%fea = fea/256;
 
 
 % load Yale (64x64) data
