@@ -131,7 +131,7 @@ for train_num = 2:8
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALE32_' int2str(train_num) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
+    save(['YALE32_normalized_' int2str(train_num) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
 end 
 
 
