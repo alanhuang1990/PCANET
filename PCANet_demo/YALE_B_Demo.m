@@ -12,15 +12,15 @@ addpath('./Utils');
 addpath('./Liblinear');
 
 
-TrnSize = 165; 
+TrnSize = 2414; 
 ImgSize = 32; 
 ImgFormat = 'gray'; %'color' or 'gray'
 
-DataSplitsAddrPre = './YALE64/';
+DataSplitsAddrPre = './YALE_B/';
 
 F_acc = [];
 F_err = [];
-load('./YALE64/Yale_32x32.mat'); 
+load('./YALE_B/YaleB_32x32.mat'); 
 
 %normalize to unit
 %factor = sqrt(sum(fea.^2,2))
@@ -32,7 +32,11 @@ load('./YALE64/Yale_32x32.mat');
 
 
 % load Yale (64x64) data
-for train_num = 2:8
+t_num = [5 10 20 30 40 50];
+
+for itr_train = 1:length(t_num)
+    train_num = t_num(itr_train);
+
     for itr = 1:50
         DataSplitsAddr = [DataSplitsAddrPre int2str(train_num) 'Train/' int2str(itr) '.mat'];
 
@@ -97,7 +101,7 @@ for train_num = 2:8
 
         tic; 
         for idx = 1:1:nTestImg
-
+          
             ftest = PCANet_FeaExt(TestData_ImgCell(idx),V,PCANet); % extract a test feature using trained PCANet model 
 
 
@@ -122,7 +126,7 @@ for train_num = 2:8
         F_acc = [Accuracy;F_acc];
         F_err = [ErRate; F_err];
         fprintf('\n     Testing error rate for split %d : %.2f%%',itr, 100*ErRate);
-
+        save(['YALEB32_' int2str(train_num) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
         
     end 
     %% Results display
@@ -131,7 +135,7 @@ for train_num = 2:8
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALE32_' int2str(train_num) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
+    save(['YALEB32_' int2str(train_num) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
 end 
 
 
