@@ -68,13 +68,10 @@ public:
 };
 
 
-int half_row_width = 0;
-int half_col_width = 0;
-int row_connectivity = 0;
-int col_connectivity = 0;
 
 
-void mark_connectivity(Mat2D & mat_res, int row_id_a,int col_id_a, int row_id_b, int col_id_b, double value)
+
+void mark_connectivity(Mat2D & mat_res, int row_id_a,int col_id_a, int row_id_b, int col_id_b, double value,int row_connectivity,int col_connectivity)
 {
     //printf("(%d %d) is connected with (%d %d)\n",row_id_a,col_id_a,row_id_b,col_id_b);
     int id_a = col_id_a * row_connectivity + row_id_a;
@@ -84,7 +81,7 @@ void mark_connectivity(Mat2D & mat_res, int row_id_a,int col_id_a, int row_id_b,
     mat_res(id_b,id_a) = mat_res(id_a,id_b);
 }
 
-void  make_connectivity_at( Mat2D &filter, Mat2D & mat_res,int row_id, int col_id)
+void  make_connectivity_at( Mat2D &filter, Mat2D & mat_res,int row_id, int col_id,int half_row_width,int half_col_width,int row_connectivity,int col_connectivity)
 {
     for (int j_col =  col_id - half_col_width ; j_col <= col_id+half_col_width; j_col++) {
         for (int i_row = row_id - half_row_width; i_row <= row_id+half_row_width; i_row++) {
@@ -98,16 +95,16 @@ void  make_connectivity_at( Mat2D &filter, Mat2D & mat_res,int row_id, int col_i
             mat_res(id_a,id_b) = max(mat_res(id_a,id_b),value);
             mat_res(id_b,id_a) = mat_res(id_a,id_b);
             */
-            mark_connectivity(mat_res,row_id,col_id,i_row,j_col,filter(i_row - row_id + half_row_width, j_col - col_id + half_col_width ));
+            mark_connectivity(mat_res,row_id,col_id,i_row,j_col,filter(i_row - row_id + half_row_width, j_col - col_id + half_col_width ),row_connectivity,col_connectivity);
         }
     }
 }
 
-void  make_connectivity(Mat2D &filter, Mat2D & mat_res)
+void  make_connectivity(Mat2D &filter, Mat2D & mat_res,int half_row_width,int half_col_width,int row_connectivity,int col_connectivity)
 {
     for (int j_col =0; j_col <col_connectivity; j_col++) {
         for (int i_row=0; i_row < row_connectivity; i_row++) {
-            make_connectivity_at(filter, mat_res,i_row , j_col);
+            make_connectivity_at(filter, mat_res,i_row , j_col,half_row_width,half_col_width,row_connectivity,col_connectivity);
         }
     }
 }
@@ -126,6 +123,11 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     Mat2D filter = Mat2D(mxGetPr(prhs[3]),mxGetM(prhs[3]),mxGetN(prhs[3]));
     Mat2D mtx_in= Mat2D(mxGetPr(prhs[0]),mxGetM(prhs[0]),mxGetN(prhs[0]));
     
+    int half_row_width = 0;
+    int half_col_width = 0;
+    int row_connectivity = 0;
+    int col_connectivity = 0;
+    
     plhs[0] = mxCreateDoubleMatrix(mtx_in.get_N_col(),mtx_in.get_N_col(),mxREAL);
     Mat2D mtx_out= Mat2D(mxGetPr(plhs[0]),mxGetM(plhs[0]),mxGetN(plhs[0]));
     mtx_out.init_zeros();
@@ -135,6 +137,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     row_connectivity = img_size[0]-p_size[0]+1;
     col_connectivity = img_size[1] - p_size[1] +1;
     
+    
     //printf("row_connectivity: %d  col_connectivity:%d \n ",row_connectivity,col_connectivity);
     
     if (row_connectivity * col_connectivity != mtx_out.get_N_col()) {
@@ -143,7 +146,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     
     
     
-    make_connectivity(filter,mtx_out);
+    make_connectivity(filter,mtx_out,half_row_width,half_col_width,row_connectivity,col_connectivity);
     
     
     
