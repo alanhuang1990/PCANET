@@ -13,14 +13,14 @@ addpath('./Liblinear');
 
 
 TrnSize = 165; 
-ImgSize = 32; 
+ImgSize = 64; 
 ImgFormat = 'gray'; %'color' or 'gray'
 
 DataSplitsAddrPre = './YALE64/';
 
 F_acc = [];
 F_err = [];
-load('./YALE64/Yale_32x32.mat'); 
+load('./YALE64/Yale_64x64.mat'); 
 
 %normalize to unit
 %factor = sqrt(sum(fea.^2,2))
@@ -137,7 +137,7 @@ for train_num = 2:8
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALE32_WhitenedPCA_' int2str(train_num) '_d' int2str(min(size(ftrain))-1) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
+    save(['YALE64_WhitenedPCA_' int2str(train_num) '_d' int2str(min(size(ftrain))-1) '_PCANET.mat'],'F_acc','F_err','PCANet','V');
 end 
 
 
