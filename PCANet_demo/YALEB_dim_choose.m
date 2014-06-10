@@ -12,14 +12,15 @@ addpath('./Utils');
 addpath('./Liblinear');
 
 
-TrnSize = 165; 
-ImgSize = 64; 
+TrnSize = 2414; 
+ImgSize = 32; 
 ImgFormat = 'gray'; %'color' or 'gray'
 
-DataSplitsAddrPre = './YALE64/';
+DataSplitsAddrPre = './YALE_B/';
 
 
-load('./YALE64/Yale_64x64.mat'); 
+load('./YALE_B/YaleB_32x32.mat'); 
+
 
 %normalize to unit
 %factor = sqrt(sum(fea.^2,2))
@@ -30,10 +31,11 @@ load('./YALE64/Yale_64x64.mat');
 %fea = fea/256;
 
 
-% load Yale (64x64) data
-for train_num = 8:8
-%for train_num = 7
-%    for itr = 1
+t_num = [5 10 20 30 40 50];
+
+for itr_train = 1:length(t_num)
+    train_num = t_num(itr_train);
+
     F_acc = [];
     F_err = [];
     F_dims = [];
@@ -48,8 +50,13 @@ for train_num = 8:8
         TestData = fea(testIdx,:)';
         TestLabels = gnd(testIdx,:);
 
-        
-        valIdx = trainIdx(1:train_num:size(trainIdx));
+        n_val = 1;
+        valIdx=[];
+        for i=1:n_val
+            valIdx = [valIdx;trainIdx(i:train_num:size(trainIdx))];
+        end
+        %valIdx = trainIdx(1:train_num:size(trainIdx));
+        valIdx = sort(valIdx);
         ValData_test = fea(valIdx,:)';
         ValLabels_test = gnd(valIdx);
         trainIdx(1:train_num:size(trainIdx)) =[];
@@ -83,7 +90,7 @@ for train_num = 8:8
         PCANet_TrnTime = toc;
         clear TrnData_ImgCell; 
 
-        %% PCANet Validation
+%         %% PCANet Validation
         fprintf('Extracting training image feature...');
         TrnData_ImgCell = mat2imgcell(TrnData,ImgSize,ImgSize,ImgFormat);
         
@@ -156,6 +163,7 @@ for train_num = 8:8
         ftrain = ftrain';
 
         %for dim = 1:5:(size(ftrain,1)-1)
+            %dim = (size(ftrain,1)-1);
             dim = PCA_dims(min_idx)
             TestData_ImgCell = mat2imgcell(TestData,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
             fprintf('\n ====== PCANet Testing ======= \n')
@@ -203,7 +211,7 @@ for train_num = 8:8
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALE64_WhitenedPCA_' int2str(train_num) '_d_best' '_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
+    save(['YALEB32_WhitenedPCA_' int2str(train_num) '_d_best' '_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
 end 
 
 

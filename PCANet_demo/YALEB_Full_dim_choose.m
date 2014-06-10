@@ -12,14 +12,15 @@ addpath('./Utils');
 addpath('./Liblinear');
 
 
-TrnSize = 165; 
-ImgSize = 64; 
+TrnSize = 2414; 
+ImgSize = 32; 
 ImgFormat = 'gray'; %'color' or 'gray'
 
-DataSplitsAddrPre = './YALE64/';
+DataSplitsAddrPre = './YALE_B/';
 
 
-load('./YALE64/Yale_64x64.mat'); 
+load('./YALE_B/YaleB_32x32.mat'); 
+
 
 %normalize to unit
 %factor = sqrt(sum(fea.^2,2))
@@ -30,10 +31,11 @@ load('./YALE64/Yale_64x64.mat');
 %fea = fea/256;
 
 
-% load Yale (64x64) data
-for train_num = 8:8
-%for train_num = 7
-%    for itr = 1
+t_num = [5 10 20 30 40 50];
+
+for itr_train = 1:length(t_num)
+    train_num = t_num(itr_train);
+
     F_acc = [];
     F_err = [];
     F_dims = [];
@@ -48,8 +50,13 @@ for train_num = 8:8
         TestData = fea(testIdx,:)';
         TestLabels = gnd(testIdx,:);
 
-        
-        valIdx = trainIdx(1:train_num:size(trainIdx));
+        n_val = 1;
+        valIdx=[];
+        for i=1:n_val
+            valIdx = [valIdx;trainIdx(i:train_num:size(trainIdx))];
+        end
+        %valIdx = trainIdx(1:train_num:size(trainIdx));
+        valIdx = sort(valIdx);
         ValData_test = fea(valIdx,:)';
         ValLabels_test = gnd(valIdx);
         trainIdx(1:train_num:size(trainIdx)) =[];
@@ -83,7 +90,7 @@ for train_num = 8:8
         PCANet_TrnTime = toc;
         clear TrnData_ImgCell; 
 
-        %% PCANet Validation
+         %% PCANet Validation
         fprintf('Extracting training image feature...');
         TrnData_ImgCell = mat2imgcell(TrnData,ImgSize,ImgSize,ImgFormat);
         
@@ -94,55 +101,6 @@ for train_num = 8:8
         fprintf('\nPerform PCA on image feature...');
         PCA_V_max = PCA(ftrain', max_dim,1,10000);
         
-        
-        TrnData_ImgCell = mat2imgcell(ValTrnData,ImgSize,ImgSize,ImgFormat);
-        clear ValTrnData; 
-        [val_ftrain BlkIdx] = PCANet_FeaExt(TrnData_ImgCell,V,PCANet);
-        clear TrnData_ImgCell; 
-
-        ftrain = val_ftrain';
-        PCA_dims=[];
-        PCA_errors=[];
-
-        nValImg = size(ValLabels_test,1);
-        
-        fprintf('\n ====== PCANet Validating ======= \n')
-        for dim = 1:max(ceil(max_dim/15),1):max_dim
-            TestData_ImgCell = mat2imgcell(ValData_test,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
-            nCorrRecog = 0;
-            RecHistory = zeros(nValImg,1);
-            PCA_V=PCA_V_max(:,1:dim);
-            PCA_ftrain = ftrain*PCA_V;
-            for idx = 1:nValImg
-                
-                ftest = PCANet_FeaExt(TestData_ImgCell(idx),V,PCANet); % extract a test feature using trained PCANet model 
-                
-                Y_Idx = knnsearch(PCA_ftrain,ftest'*PCA_V,'k',1,'distance','cosine');
-                %Y_Idx = knnsearch(ftrain,ftest','k',1,'distance',@ChiDist);
-                xLabel_est = ValTrnLabels(Y_Idx);
-        
-                if xLabel_est == ValLabels_test(idx)
-                    RecHistory(idx) = 1;
-                    nCorrRecog = nCorrRecog + 1;
-                end
-
-                TestData_ImgCell{idx} = [];
-
-            end
-            
-            Averaged_TimeperTest = toc/nValImg;
-            Accuracy = nCorrRecog/nValImg; 
-            ErRate = 1 - Accuracy;
-         
-            PCA_dims = [ dim PCA_dims];
-            PCA_errors = [ ErRate PCA_errors];
-            %fprintf('\n     Testing error rate for split %d : %.2f%%',itr, 100*ErRate);
-            fprintf('\n     Testing error rate on validation set with dim=%d : %.2f%%',dim, 100*ErRate);
-            
-        end
-        
-        
-        [min_error min_idx] = min(PCA_errors);
         
         
         %% PCANet Feature Extraction and Testing 
@@ -156,7 +114,8 @@ for train_num = 8:8
         ftrain = ftrain';
 
         %for dim = 1:5:(size(ftrain,1)-1)
-            dim = PCA_dims(min_idx)
+            dim = (size(ftrain,1)-1);
+
             TestData_ImgCell = mat2imgcell(TestData,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
             fprintf('\n ====== PCANet Testing ======= \n')
             
@@ -203,7 +162,7 @@ for train_num = 8:8
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALE64_WhitenedPCA_' int2str(train_num) '_d_best' '_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
+    save(['YALEB32_WhitenedPCA_' int2str(train_num) '_d_Full' '_''_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
 end 
 
 
