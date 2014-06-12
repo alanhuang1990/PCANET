@@ -50,7 +50,7 @@ for itr_train = 1:length(t_num)
         TestData = fea(testIdx,:)';
         TestLabels = gnd(testIdx,:);
 
-        n_val = 1;
+        n_val = ceil(t_num*0.4);
         valIdx=[];
         for i=1:n_val
             valIdx = [valIdx;trainIdx(i:train_num:size(trainIdx))];
@@ -211,7 +211,7 @@ for itr_train = 1:length(t_num)
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALEB32_WhitenedPCA_' int2str(train_num) '_d_best' '_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
+    save(['YALEB32_WhitenedPCA_' int2str(train_num) '_d_best_moreVal' '_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
 end 
 
 
