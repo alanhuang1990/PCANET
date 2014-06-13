@@ -33,7 +33,7 @@ load('./YALE_B/YaleB_32x32.mat');
 
 t_num = [5 10 20 30 40 50];
 
-for itr_train = 1:length(t_num)
+for itr_train = 3:length(t_num)
     train_num = t_num(itr_train);
 
     F_acc = [];
