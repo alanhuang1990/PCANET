@@ -104,18 +104,7 @@ for itr_train = 6:length(t_num)
           
             ftest = PCANet_FeaExt(TestData_ImgCell(idx),V,PCANet); % extract a test feature using trained PCANet model 
 
-            tic;
             Y_Idx = knnsearch(ftrain,ftest','k',1,'distance',@ChiDist);
-            
-            fprintf('time for one:%.2f\n',toc);
-            tic;
-            Y_Idx = knnsearch(ftrain,[ftest';ftest'],'k',1,'distance',@ChiDist);
-            fprintf('time for two:%.2f\n',toc);
-            tic;
-            
-            Y_Idx = knnsearch(ftrain,[ftest';ftest';ftest';ftest'],'k',1,'distance',@ChiDist);
-            fprintf('time for four:%.2f\n',toc);
-            tic;
             
             xLabel_est = TrnLabels(Y_Idx);
             if xLabel_est == TestLabels(idx)
