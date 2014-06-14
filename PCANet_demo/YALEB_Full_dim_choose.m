@@ -41,7 +41,7 @@ for itr_train = 6:length(t_num)
     F_acc = [];
     F_err = [];
     F_dims = [];
-    for itr = 1:50
+    for itr = 1:1
         DataSplitsAddr = [DataSplitsAddrPre int2str(train_num) 'Train/' int2str(itr) '.mat'];
 
         %fprintf(DataSplitsAddr);
@@ -106,17 +106,13 @@ for itr_train = 6:length(t_num)
         
         
         %% PCANet Feature Extraction and Testing 
-        fprintf('\nExtracting training image feature...');
-        TrnData_ImgCell = mat2imgcell(TrnData,ImgSize,ImgSize,ImgFormat);
-        clear TrnData; 
-        [ftrain BlkIdx] = PCANet_FeaExt(TrnData_ImgCell,V,PCANet);
-        clear TrnData_ImgCell; 
+        
 
 
         ftrain = ftrain';
         max_dim = (min(size(ftrain))-1);
-        for dim = 1:max(ceil(max_dim/15),1):max_dim
-            %dim = (size(ftrain,1)-1);
+        %for dim = 1:max(ceil(max_dim/15),1):max_dim
+            dim = (size(ftrain,1)-1);
 
             TestData_ImgCell = mat2imgcell(TestData,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
             fprintf('\n ====== PCANet Testing ======= \n')
@@ -157,7 +153,7 @@ for itr_train = 6:length(t_num)
             %fprintf('\n     Testing error rate for split %d : %.2f%%',itr, 100*ErRate);
             fprintf('\n     Testing error rate for split %d with dim=%d : %.2f%%',itr,dim, 100*ErRate);
             
-        end
+        %end
         clear TrnData TrnLabels TestData TestLabels PCA_V_max ftrain PCA_V PCA_ftrain ;
     
     end 
