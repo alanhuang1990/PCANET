@@ -33,7 +33,7 @@ load('./YALE_B/YaleB_32x32.mat');
 
 t_num = [5 10 20 30 40 50];
 
-for itr_train = 1:length(t_num)
+for itr_train = 4:length(t_num)
     train_num = t_num(itr_train);
 
     F_acc = [];
@@ -112,9 +112,9 @@ for itr_train = 1:length(t_num)
 
 
         ftrain = ftrain';
-
-        %for dim = 1:5:(size(ftrain,1)-1)
-            dim = (size(ftrain,1)-1);
+        max_dim = (min(size(ftrain))-1);
+        for dim = 1:max(ceil(max_dim/15),1):max_dim
+            %dim = (size(ftrain,1)-1);
 
             TestData_ImgCell = mat2imgcell(TestData,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
             fprintf('\n ====== PCANet Testing ======= \n')
@@ -154,7 +154,10 @@ for itr_train = 1:length(t_num)
             %PCA_errors = [PCA_errors ErRate];
             %fprintf('\n     Testing error rate for split %d : %.2f%%',itr, 100*ErRate);
             fprintf('\n     Testing error rate for split %d with dim=%d : %.2f%%',itr,dim, 100*ErRate);
-
+            
+        end
+        clear TrnData TrnLabels TestData TestLabels PCA_V_max ftrain PCA_V PCA_ftrain ;
+    
     end 
     %% Results display
     fprintf('\n ===== Results of PCANet, followed by a linear SVM classifier =====');

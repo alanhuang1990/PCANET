@@ -34,7 +34,7 @@ load('./YALE_B/YaleB_32x32.mat');
 % load Yale (64x64) data
 t_num = [5 10 20 30 40 50];
 
-for itr_train = 3:length(t_num)
+for itr_train = 6:length(t_num)
     train_num = t_num(itr_train);
 
     for itr = 1:50
@@ -104,8 +104,19 @@ for itr_train = 3:length(t_num)
           
             ftest = PCANet_FeaExt(TestData_ImgCell(idx),V,PCANet); % extract a test feature using trained PCANet model 
 
-
+            tic;
             Y_Idx = knnsearch(ftrain,ftest','k',1,'distance',@ChiDist);
+            
+            fprintf('time for one:%.2f\n',toc);
+            tic;
+            Y_Idx = knnsearch(ftrain,[ftest';ftest'],'k',1,'distance',@ChiDist);
+            fprintf('time for two:%.2f\n',toc);
+            tic;
+            
+            Y_Idx = knnsearch(ftrain,[ftest';ftest';ftest';ftest'],'k',1,'distance',@ChiDist);
+            fprintf('time for four:%.2f\n',toc);
+            tic;
+            
             xLabel_est = TrnLabels(Y_Idx);
             if xLabel_est == TestLabels(idx)
                 RecHistory(idx) = 1;
