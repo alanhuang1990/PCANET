@@ -41,7 +41,7 @@ for itr_train = 6:length(t_num)
     F_acc = [];
     F_err = [];
     F_dims = [];
-    for itr = 1:1
+    for itr = 1:50
         DataSplitsAddr = [DataSplitsAddrPre int2str(train_num) 'Train/' int2str(itr) '.mat'];
 
         %fprintf(DataSplitsAddr);
