@@ -41,7 +41,7 @@ for itr_train = 6:length(t_num)
     F_acc = [];
     F_err = [];
     F_dims = [];
-    for itr = 1:1
+    for itr = 1:50
         DataSplitsAddr = [DataSplitsAddrPre int2str(train_num) 'Train/' int2str(itr) '.mat'];
 
         %fprintf(DataSplitsAddr);
@@ -101,6 +101,7 @@ for itr_train = 6:length(t_num)
         
         max_dim = (min(size(ftrain))-1);
         fprintf('\nPerform PCA on image feature...');
+   
         PCA_V_max = PCA(ftrain', max_dim,1,10000);
         
         
@@ -108,8 +109,8 @@ for itr_train = 6:length(t_num)
         %% PCANet Feature Extraction and Testing 
         
 
+        
 
-        ftrain = ftrain';
         max_dim = (min(size(ftrain))-1);
         %for dim = 1:max(ceil(max_dim/15),1):max_dim
             dim = (size(ftrain,1)-1);
@@ -121,7 +122,7 @@ for itr_train = 6:length(t_num)
             RecHistory = zeros(nTestImg,1);
             tic; 
             PCA_V=PCA_V_max(:,1:dim);    
-            PCA_ftrain = ftrain*PCA_V;
+            PCA_ftrain = ftrain'*PCA_V;
             for idx = 1:1:nTestImg
 
                 ftest = PCANet_FeaExt(TestData_ImgCell(idx),V,PCANet); % extract a test feature using trained PCANet model 
