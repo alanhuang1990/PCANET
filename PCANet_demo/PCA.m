@@ -23,7 +23,7 @@ if size(train_data,1) > size(train_data,2)
     if dim == size(train_data,2)
         [V1,D1] = eig(St);
     else
-        [V1,D1] = eigs(St,dim,'LA');
+        [V1,D1] = eigs(St,dim,'LM');
     end
     V = V1;
     D = D1;
@@ -44,7 +44,7 @@ else
     if size(train_data,1) == dim
         [V2,D2] = eig(Stt);
     else
-        [V2,D2] = eigs(Stt,dim,'LA');
+        [V2,D2] = eigs(Stt,dim,'LM');
     end
     D = D2;
     D2 = inv(D2);

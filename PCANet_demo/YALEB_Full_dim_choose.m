@@ -13,7 +13,7 @@ addpath('./Liblinear');
 
 
 TrnSize = 2414; 
-ImgSize = 32; 
+ImgSize = [32 32]; 
 ImgFormat = 'gray'; %'color' or 'gray'
 
 DataSplitsAddrPre = './YALE_B/';
@@ -34,14 +34,14 @@ load('./YALE_B/YaleB_32x32.mat');
 t_num = [5 10 20 30 40 50];
 
 
-for itr_train = 6:length(t_num)
+for itr_train = 1:length(t_num)
 
     train_num = t_num(itr_train);
 
     F_acc = [];
     F_err = [];
     F_dims = [];
-    for itr = 1:50
+    for itr = 1:5
         DataSplitsAddr = [DataSplitsAddrPre int2str(train_num) 'Train/' int2str(itr) '.mat'];
 
         %fprintf(DataSplitsAddr);
@@ -75,7 +75,7 @@ for itr_train = 6:length(t_num)
         % We use the parameters in our IEEE TPAMI submission
         PCANet.NumStages = 2;
         PCANet.PatchSize = 7;
-        PCANet.NumFilters = [8 8];
+        PCANet.NumFilters = [8 4];
         PCANet.HistBlockSize = [8 6]; 
         PCANet.BlkOverLapRatio = 0.5;
 
@@ -85,7 +85,7 @@ for itr_train = 6:length(t_num)
         %% PCANet Training with 10000 samples
 
         fprintf('\n ====== PCANet Training ======= \n')
-        TrnData_ImgCell = mat2imgcell(TrnData,ImgSize,ImgSize,ImgFormat); % convert columns in TrnData to cells 
+        TrnData_ImgCell = mat2imgcell(TrnData,ImgSize(1),ImgSize(2),ImgFormat); % convert columns in TrnData to cells 
 
         tic;
         [ftrain V BlkIdx] = PCANet_train(TrnData_ImgCell,PCANet,0); % BlkIdx serves the purpose of learning block-wise DR projection matrix; e.g., WPCA
@@ -94,7 +94,7 @@ for itr_train = 6:length(t_num)
 
          %% PCANet Validation
         fprintf('Extracting training image feature...');
-        TrnData_ImgCell = mat2imgcell(TrnData,ImgSize,ImgSize,ImgFormat);
+        TrnData_ImgCell = mat2imgcell(TrnData,ImgSize(1),ImgSize(2),ImgFormat);
         
         [ftrain BlkIdx] = PCANet_FeaExt(TrnData_ImgCell,V,PCANet);
         clear TrnData_ImgCell; 
@@ -111,9 +111,9 @@ for itr_train = 6:length(t_num)
 
         
 
-        max_dim = (min(size(ftrain))-1);
+            max_dim = (min(size(ftrain))-1);
         %for dim = 1:max(ceil(max_dim/15),1):max_dim
-            dim = (size(ftrain,1)-1);
+            dim = max_dim;
 
             TestData_ImgCell = mat2imgcell(TestData,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
             fprintf('\n ====== PCANet Testing ======= \n')
@@ -164,7 +164,7 @@ for itr_train = 6:length(t_num)
     fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
     fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
     
-    save(['YALEB32_WhitenedPCA_' int2str(train_num) '_d_Full' '_''_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
+    save(['TestYALEB32_WhitenedPCA_' int2str(train_num) '_d_Full' '_''_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
 end 
 
 
