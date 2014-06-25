@@ -18,10 +18,10 @@ ImgFormat = 'gray'; %'color' or 'gray'
 
 %% PCANet parameters (they should be funed based on validation set; i.e., ValData & ValLabel)
 PCANet.NumStages = 2;
-PCANet.PatchSize = 9;
+PCANet.PatchSize = 7;
 PCANet.NumFilters = [8 8];
 PCANet.HistBlockSize = [15 15]; 
-PCANet.BlkOverLapRatio = 0;
+PCANet.BlkOverLapRatio = 0.3;
 fprintf('\n ====== PCANet Parameters ======= \n')
 PCANet
 
