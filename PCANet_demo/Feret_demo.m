@@ -20,7 +20,7 @@ ImgFormat = 'gray'; %'color' or 'gray'
 PCANet.NumStages = 2;
 PCANet.PatchSize = 7;
 PCANet.NumFilters = [8 8];
-PCANet.HistBlockSize = [15 15]; 
+PCANet.HistBlockSize = [13 13]; 
 PCANet.BlkOverLapRatio = 0.3;
 fprintf('\n ====== PCANet Parameters ======= \n')
 PCANet
@@ -46,7 +46,7 @@ end
 clear fea gnd;
 
 %% PCANet Training 
-
+tic;
 fprintf('\n ====== PCANet Training ======= \n')
 [ftrain V BlkIdx] = PCANet_train(TrnData_ImgCell,PCANet,1); % BlkIdx serves the purpose of learning block-wise DR projection matrix; e.g., WPCA
 PCANet_TrnTime = toc;
