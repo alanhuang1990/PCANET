@@ -12,7 +12,7 @@ addpath('./Utils');
 addpath('./Liblinear');
 
 
-ImgSize = [150 130]; 
+ImgSize = [130 130]; 
 ImgFormat = 'gray'; %'color' or 'gray'
 
 
@@ -20,14 +20,14 @@ ImgFormat = 'gray'; %'color' or 'gray'
 PCANet.NumStages = 2;
 PCANet.PatchSize = 7;
 PCANet.NumFilters = [8 8];
-PCANet.HistBlockSize = [13 13]; 
-PCANet.BlkOverLapRatio = 0.3;
+PCANet.HistBlockSize = [15 15]; 
+PCANet.BlkOverLapRatio = 0;
 fprintf('\n ====== PCANet Parameters ======= \n')
 PCANet
 
 
 %% Read data for training and testing
-load('../../Feret/gallery.mat'); 
+load('../../Feret/gallery_new.mat'); 
 TrnData_ImgCell = fea;
 TrnLabels = gnd;
 TrnLabels = cell2mat(TrnLabels);
@@ -36,7 +36,7 @@ for i =1:length(TrnData_ImgCell)
     TrnData_ImgCell{i} = double(TrnData_ImgCell{i});
 end
 
-load('../../Feret/dup1.mat');
+load('../../Feret/dup1_new.mat');
 TestData_ImgCell = fea;
 TestLabels = gnd;
 TestLabels = cell2mat(TestLabels);
