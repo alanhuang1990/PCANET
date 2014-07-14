@@ -20,8 +20,8 @@ ImgFormat = 'gray'; %'color' or 'gray'
 PCANet.NumStages = 2;
 PCANet.PatchSize = 7;
 PCANet.NumFilters = [8 8];
-PCANet.HistBlockSize = [13 13]; 
-PCANet.BlkOverLapRatio = 0.3;
+PCANet.HistBlockSize = [15 15]; 
+PCANet.BlkOverLapRatio = 0.2;
 fprintf('\n ====== PCANet Parameters ======= \n')
 PCANet
 
@@ -35,8 +35,8 @@ clear fea gnd;
 for i =1:length(TrnData_ImgCell)
     TrnData_ImgCell{i} = double(TrnData_ImgCell{i});
 end
-
-load('../../Feret/dup1.mat');
+fprintf('dup2\n');
+load('../../Feret/dup2.mat');
 TestData_ImgCell = fea;
 TestLabels = gnd;
 TestLabels = cell2mat(TestLabels);

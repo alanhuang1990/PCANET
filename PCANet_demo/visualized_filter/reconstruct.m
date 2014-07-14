@@ -1,5 +1,5 @@
-load('inst.mat');
-%load('PCA_V.mat');
+load('FERET_inst.mat');
+load('FERET_V.mat');
 V_used = V{1}(:,1:8);
 
 reconst = zeros(size(inst)+[7 7]-1); 
@@ -10,7 +10,17 @@ fea_maps = cell(size(V_used,2),1);
 %%convolute filter to generate feature maps
 for i = 1:length(fea_maps)
    fea_maps{i} = conv2(inst,rot90(reshape(V_used(:,i),[7 7]),2),'same'); 
-   imwrite(fea_maps{i},['fea_map-' int2str(i) '.jpg']);
+   temp = fea_maps{i};
+   temp = (temp-min(temp(:)))/(max(temp(:))-min(temp(:)));
+   imwrite(temp,['fea_map-' int2str(i) '.jpg']);
+   
+   for j = 1:size(V{2},2)
+       f_v = V{2}(:,j);
+       f_m = conv2(fea_maps{i},rot90(reshape(f_v,[7 7]),2),'same'); 
+       temp = f_m;
+       temp = (temp-min(temp(:)))/(max(temp(:))-min(temp(:)));
+       imwrite(temp,['fea_map-' int2str(i) '-' int2str(j) '.jpg']);
+   end
 end
 
 %% use feature maps to reconstruct image
@@ -32,7 +42,9 @@ for i_row = 1:n_row
 end
 
 reconst_img = reconst./reconst_mask;
+reconst_img = (reconst_img-min(reconst_img(:)))/(max(reconst_img(:))-min(reconst_img(:)));
 imwrite(reconst_img,[int2str(size(V_used,2)) '-reconstucted_using_method1.jpg']);
+inst = (inst-min(inst(:)))/(max(inst(:))-min(inst(:)));
 imwrite(inst,'ori.jpg');
 
 %inv_fea_maps = cell(size(V_used,2),1);
