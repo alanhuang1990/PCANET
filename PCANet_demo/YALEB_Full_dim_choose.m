@@ -70,31 +70,26 @@ for itr_train = 1:length(t_num)
         clear trainIdx;
 
         nTestImg = length(TestLabels);
-
+        load 'FERET_V.mat';
         %% PCANet parameters (they should be funed based on validation set; i.e., ValData & ValLabel)
         % We use the parameters in our IEEE TPAMI submission
+
         PCANet.NumStages = 2;
         PCANet.PatchSize = 7;
-        PCANet.NumFilters = [8 4];
+        PCANet.NumFilters = [8 8];
         PCANet.HistBlockSize = [8 6]; 
         PCANet.BlkOverLapRatio = 0.5;
-
         fprintf('\n ====== PCANet Parameters ======= \n')
         PCANet
 
         %% PCANet Training with 10000 samples
 
-        fprintf('\n ====== PCANet Training ======= \n')
-        TrnData_ImgCell = mat2imgcell(TrnData,ImgSize(1),ImgSize(2),ImgFormat); % convert columns in TrnData to cells 
-
         tic;
-        [ftrain V BlkIdx] = PCANet_train(TrnData_ImgCell,PCANet,0); % BlkIdx serves the purpose of learning block-wise DR projection matrix; e.g., WPCA
-        PCANet_TrnTime = toc;
-        clear TrnData_ImgCell; 
 
          %% PCANet Validation
         fprintf('Extracting training image feature...');
         TrnData_ImgCell = mat2imgcell(TrnData,ImgSize(1),ImgSize(2),ImgFormat);
+        
         
         [ftrain BlkIdx] = PCANet_FeaExt(TrnData_ImgCell,V,PCANet);
         clear TrnData_ImgCell; 
@@ -115,7 +110,7 @@ for itr_train = 1:length(t_num)
         %for dim = 1:max(ceil(max_dim/15),1):max_dim
             dim = max_dim;
 
-            TestData_ImgCell = mat2imgcell(TestData,ImgSize,ImgSize,ImgFormat); % convert columns in TestData to cells 
+            TestData_ImgCell = mat2imgcell(TestData,ImgSize(1),ImgSize(2),ImgFormat); % convert columns in TestData to cells 
             fprintf('\n ====== PCANet Testing ======= \n')
             
             nCorrRecog = 0;
@@ -159,12 +154,9 @@ for itr_train = 1:length(t_num)
     
     end 
     %% Results display
-    fprintf('\n ===== Results of PCANet, followed by a linear SVM classifier =====');
-    fprintf('\n     PCANet training time: %.2f secs.', PCANet_TrnTime);
-    fprintf('\n     Average testing error rate: %.2f%%', 100*mean(F_err));
-    fprintf('\n     Average testing time %.2f secs per test sample. \n\n',Averaged_TimeperTest);
-    
-    save(['TestYALEB32_WhitenedPCA_' int2str(train_num) '_d_Full' '_''_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
+
+     
+    save(['FERET_YALEB32_WhitenedPCA_' int2str(train_num) '_d_Full' '_''_PCANET.mat'],'F_dims','F_acc','F_err','PCANet','V');
 end 
 
 
